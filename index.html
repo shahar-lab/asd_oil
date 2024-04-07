@@ -40,7 +40,6 @@
 <body>
 
     <script>
-    var id_response;
     var experimentEnded = false;  
         var jsPsych = initJsPsych({
 
@@ -586,7 +585,7 @@ on_interaction_data_update: function(data) {
         var pavlovia_finish = {
         type: jsPsychPavlovia,
         command: "finish",
-        participantId: id_response,
+        participantId: subject_id,
         completedCallback: function() {
                 window.location.replace("https://www.prolific.co/");
             }
