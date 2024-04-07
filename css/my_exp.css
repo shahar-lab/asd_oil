@@ -17,7 +17,10 @@
         height: 150px;
         width: 526px;
     }
-
+    img.icar {
+        height: 400px;
+        width: 800px;
+    }
     :root {
         --top_middle: 0px;
         --left_middle: 0px;
@@ -109,8 +112,8 @@
         width: 485px;
     }
     .reward_example {
-        height: 166px;
-        width: 367px;
+        height: 170px;
+        width: 418px;
     }
     img.card_left {
         position: fixed;

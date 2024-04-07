@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Cards</title>
+    <title>Experiment</title>
 
     <!-- online run
     <script src="lib/vendors/jspsych-7.1.2/jspsych.js"></script>
@@ -14,8 +14,10 @@
     <script src="lib/vendors/jspsych-7.1.2/plugin-survey-likert.js"></script>
     <script src="lib/vendors/jspsych-7.1.2/plugin-survey-text.js"></script>
     <script src="lib/vendors/jspsych-7.1.2/plugin-survey-multi-choice.js"></script>
+    <script src="lib/vendors/jspsych-7.1.2/plugin-survey.js"></script>
     <link rel="stylesheet" href="lib/vendors/jspsych-7.1.2/jspsych.css">
     <link href="./css/my_exp.css" rel="stylesheet" type="text/css">
+     <script type="text/javascript" src="lib/vendors/jquery-2.2.0.min.js"></script>
     <script type="text/javascript" src="lib/jspsych-7-pavlovia-2022.1.1.js"></script>-->
 
     <!-- local run-->
@@ -27,6 +29,7 @@
     <script src="jspsych/dist/plugin-survey-likert.js"></script>
     <script src="jspsych/dist/plugin-survey-text.js"></script>
     <script src="jspsych/dist/plugin-survey-multi-choice.js"></script>
+    <script src="jspsych/dist/plugin-survey.js"></script>
     <script src="jspsych/dist/plugin-fullscreen.js"></script>
     <script src="jspsych/dist/plugin-html-slider-response.js"></script>
     <link href="jspsych/dist/jspsych.css" rel="stylesheet" type="text/css" />
@@ -37,50 +40,47 @@
 <body>
 
     <script>
-
+    var id_response;
+    var experimentEnded = false;  
         var jsPsych = initJsPsych({
+
+on_interaction_data_update: function(data) {
+    console.log(JSON.stringify(data))
+		if((data.event == 'blur') &experimentEnded==false){
+			jsPsych.pauseExperiment();
+            alert("The experiment is paused. If necessary please return to fullscreen by pressing F11 on your keyboard. Note that you will not be paid if you are not completely engaged with the experiment.");
+            jsPsych.data.addDataToLastTrial(data);
+		}
+		if(data.event == 'focus'&experimentEnded==false){
+			jsPsych.resumeExperiment();
+		}
+    
+},
             on_finish: function () {
+                experimentEnded=true
                 download_csv(jsPsych.data.get().csv());
             }
          });
+         var id_num = {
+        type: jsPsychSurveyText,
+        questions: [
+            {prompt: 'Please enter your subject code'}
+        ],
+        on_finish:function(){
+           id_response= jsPsych.data.get().last(1).values()[0].response.Q0;
+           // capture info from Prolific
+        }
+        }
+
+        jsPsych.data.addProperties({
+        subject_id: id_response,
+        });
         /*this defines the css properties according to the window_screen_size*/
         var root = document.documentElement;
         var vis_angle_px = 105
         var square_width = 51.4
         root.style.setProperty('--top_middle', window.screen.height / 2 + "px");
         root.style.setProperty('--left_middle', window.screen.width / 2 - (square_width / 2) + "px");
-        root.style.setProperty('--top_a', window.screen.height / 2 - vis_angle_px + "px");
-        root.style.setProperty('--left_a', window.screen.width / 2 - vis_angle_px + "px");
-        root.style.setProperty('--top_b', window.screen.height / 2 - 2 * vis_angle_px + "px");
-        root.style.setProperty('--left_b', window.screen.width / 2 - 2 * vis_angle_px + "px");
-        root.style.setProperty('--top_c', window.screen.height / 2 - 3 * vis_angle_px + "px");
-        root.style.setProperty('--left_c', window.screen.width / 2 - 3 * vis_angle_px + "px");
-        root.style.setProperty('--top_d', window.screen.height / 2 - vis_angle_px + "px");
-        root.style.setProperty('--right_d', window.screen.width / 2 - vis_angle_px + "px");
-        root.style.setProperty('--top_e', window.screen.height / 2 - 2 * vis_angle_px + "px");
-        root.style.setProperty('--right_e', window.screen.width / 2 - 2 * vis_angle_px + "px");
-        root.style.setProperty('--top_f', window.screen.height / 2 - 3 * vis_angle_px + "px");
-        root.style.setProperty('--right_f', window.screen.width / 2 - 3 * vis_angle_px + "px");
-        root.style.setProperty('--bottom_g', window.screen.height / 2 - vis_angle_px + "px");
-        root.style.setProperty('--right_g', window.screen.width / 2 - vis_angle_px + "px");
-        root.style.setProperty('--bottom_h', window.screen.height / 2 - 2 * vis_angle_px + "px");
-        root.style.setProperty('--right_h', window.screen.width / 2 - 2 * vis_angle_px + "px");
-        root.style.setProperty('--bottom_i', window.screen.height / 2 - 3 * vis_angle_px + "px");
-        root.style.setProperty('--right_i', window.screen.width / 2 - 3 * vis_angle_px + "px");
-        root.style.setProperty('--bottom_j', window.screen.height / 2 - vis_angle_px + "px");
-        root.style.setProperty('--left_j', window.screen.width / 2 - vis_angle_px + "px");
-        root.style.setProperty('--bottom_k', window.screen.height / 2 - 2 * vis_angle_px + "px");
-        root.style.setProperty('--left_k', window.screen.width / 2 - 2 * vis_angle_px + "px");
-        root.style.setProperty('--bottom_l', window.screen.height / 2 - 3 * vis_angle_px + "px");
-        root.style.setProperty('--left_l', window.screen.width / 2 - 3 * vis_angle_px + "px");
-
-        root.style.setProperty('--upper1', window.screen.height / 2 - 3 * vis_angle_px + "px");
-        root.style.setProperty('--upper2', window.screen.height / 2 - 2 * vis_angle_px + "px");
-        root.style.setProperty('--upper3', window.screen.height / 2 - vis_angle_px + "px");
-
-        root.style.setProperty('--lower1', window.screen.height / 2 - 3 * vis_angle_px + "px");
-        root.style.setProperty('--lower2', window.screen.height / 2 - 2 * vis_angle_px + "px");
-        root.style.setProperty('--lower3', window.screen.height / 2 - vis_angle_px + "px");
         //---------------------------------------------------------------------------------------------
         root.style.setProperty('--left_card', window.screen.width / 2 - 2 * vis_angle_px + "px");
         root.style.setProperty('--right_card', window.screen.width / 2 - 2 * vis_angle_px + "px");
@@ -92,21 +92,24 @@
         Variabels for card game
         ------------------------------------------------------*/
         var instructions_images = ['images/group_shapes.jpg', 'images/reward_example.jpg','images/no_reward_example.jpg']
-        var practice_deck_images = ['images/practice/1.jpg','images/practice/2.jpg','images/practice/3.jpg','images/practice/4.jpg','images/practice/5.jpg','images/practice/6.jpg','images/practice/7.jpg','images/practice/8.jpg','images/practice/9.jpg','images/practice/10.jpg' ]
+        var practice_deck_images = ['images/practice/1.jpg','images/practice/2.jpg','images/practice/3.jpg','images/practice/4.jpg']
         var test_deck_images = ['images/test/1.jpg', 'images/test/2.jpg', 'images/test/3.jpg', 'images/test/4.jpg', 'images/test/5.jpg','images/test/6.jpg',
         'images/test/7.jpg', 'images/test/8.jpg', 'images/test/9.jpg', 'images/test/10.jpg', 'images/test/11.jpg', 'images/test/12.jpg', 'images/test/13.jpg',
-        'images/test/14.jpg', 'images/test/15.jpg', 'images/test/16.jpg','images/test/17.jpg', 'images/test/18.jpg', 'images/test/19.jpg', 'images/test/20.jpg', 'images/test/21.jpg',
-        'images/test/22.jpg', 'images/test/23.jpg', 'images/test/24.jpg', 'images/test/25.jpg', 'images/test/26.jpg', 'images/test/27.jpg', 'images/test/28.jpg',
-        'images/test/29.jpg', 'images/test/30.jpg', 'images/test/31.jpg', 'images/test/32.jpg', 'images/test/33.jpg', 'images/test/34.jpg', 'images/test/35.jpg', 'images/test/36.jpg',
-        'images/test/37.jpg', 'images/test/38.jpg', 'images/test/39.jpg', 'images/test/40.jpg']
+        'images/test/14.jpg', 'images/test/15.jpg', 'images/test/16.jpg']
         var reward_images = ['images/zero_coins.png', 'images/won1-no-back1.png']
         var fixation = '<div class="fixation">+</div>'
 
-        var FB_matrix = [0.4, 0.6, 0.4, 0.6];
+
+        var FB_matrix = []; //second option for random walk
+        FB_matrix[0] = [0.845975582487881, 0.85, 0.81123981623416, 0.789141099022303, 0.751663824866457, 0.72735351859757, 0.742347793238537, 0.753754227215819, 0.746075023900087, 0.737343506480181, 0.692984957684149, 0.675577628229723, 0.745556748998617, 0.71125837690303, 0.694514713755348, 0.714388446287687, 0.783630386810177, 0.770445763793407, 0.824521546472684, 0.790480453126701, 0.85, 0.85, 0.843176961956961, 0.85, 0.828195931451447, 0.755869600658702, 0.776593185122782, 0.81606989556573, 0.826657856553749, 0.85, 0.763451985095631, 0.768782826705445, 0.72315453750397, 0.744041295284946, 0.755981819695817, 0.763692087417252, 0.715492666976828, 0.665323379127968, 0.661767041062244, 0.636919337440861, 0.699988753390204, 0.7057964737575, 0.697944056588352, 0.668310166782719, 0.703052596271881, 0.670977141593213, 0.657559374880663, 0.657697260617624, 0.691640971133472, 0.611226726190539]
+        FB_matrix[1] = [0.375602713995613, 0.48282509800063, 0.494525989075682, 0.543622095082177, 0.516946927374032, 0.475244820667582, 0.400760299848026, 0.381880563982018, 0.347755215789558, 0.377812300016978, 0.380163069942995, 0.38413161981098, 0.26760715260041, 0.260422784855496, 0.268155079883975, 0.251406281945099, 0.209543175321419, 0.151202231088302, 0.224978510431589, 0.272585102536807, 0.250095598302914, 0.303130386824021, 0.37655862364951, 0.425015108588993, 0.466527045391378, 0.475585372727463, 0.49537639097554, 0.454527684102617, 0.458159320947147, 0.484668262193617, 0.495795588746343, 0.517344460155327, 0.52701976983929, 0.53399907556477, 0.503566092126325, 0.473970606757295, 0.496098948910575, 0.486695446679407, 0.450300736976094, 0.398544662174359, 0.352858472073834, 0.398636195191715, 0.426971077722684, 0.412985650447782, 0.416677577190978, 0.395748342240411, 0.327448231157449, 0.327799692492665, 0.251975712140467, 0.340218688032523]
+        FB_matrix[2] = [0.193985212384723, 0.206956045541635, 0.210698560537085, 0.167181866606574, 0.160385970678125, 0.222730035820976, 0.198469637701887, 0.172671623566782, 0.162798512889768, 0.15, 0.15, 0.15, 0.15, 0.199552385667056, 0.174287773822883, 0.269670686810636, 0.252786940174757, 0.189125237952722, 0.225414299620099, 0.243618922388333, 0.242317154413386, 0.289912399513056, 0.373745950650062, 0.359084647637115, 0.403656129661135, 0.441680486222199, 0.44164400896872, 0.414427808841568, 0.432450359373388, 0.422407688676513, 0.478765980026055, 0.43991321252404, 0.460515346014774, 0.477542614359421, 0.54663951246181, 0.5718563829427, 0.599289460718547, 0.632344042749078, 0.645294843658166, 0.603839822122366, 0.626033976530081, 0.617148808754216, 0.605145559853044, 0.60581328339173, 0.634693544130636, 0.608156883430918, 0.638272917443395, 0.759248046030977, 0.800744794715403, 0.743147931095743]
+        FB_matrix[3] = [0.657246048073284, 0.618086829682723, 0.595684150521574, 0.557190569488012, 0.564740500495189, 0.537794873440958, 0.572478028772034, 0.544284759819363, 0.565512040769269, 0.609162316383323, 0.612692635970217, 0.599074184466825, 0.624430540771649, 0.61362478265891, 0.589115858605799, 0.659608157197614, 0.609923227373039, 0.646017979685294, 0.678981124134102, 0.614548145493107, 0.56383454031102, 0.549029586091234, 0.55849401531693, 0.534321380083867, 0.524323955534099, 0.470320959464802, 0.472906551046881, 0.538562286829453, 0.478144939931822, 0.446185189590624, 0.381082715549124, 0.366965796117453, 0.358985000652961, 0.372394934108319, 0.344972096143612, 0.385304745329059, 0.353303088597743, 0.354771200328839, 0.302906027656004, 0.295663486413838, 0.352017105089281, 0.354826600774228, 0.318276430004339, 0.33619164577473, 0.32106888741154, 0.359266139343765, 0.341415475662829, 0.281568937933076, 0.282294114905856, 0.199795953234659]
+
         var current_cards_practice_trial = 0;
         var current_cards_exp_trial = 0;
         var block = 0;
-        var blocks = 10;
+        var blocks = 4;
         var draw_cards;
         var drawn_cards;
         var left_card;
@@ -114,33 +117,18 @@
         var selected;
         var reward;
         var rewards_for_block = 0;
-        
-        /*---------------------------------------------------- 
-        Variabels for squares game
-        ------------------------------------------------------*/
-        /*randomly assigning the mapping of the response-keys to be ks or sk */ //cr: what does it mean? ks? sk?
-        mapping = jsPsych.randomization.sampleWithoutReplacement(['sk', 'ks'], 1)[0];
-        /* getting the images to display */
-        var change_detection_images = ['images/squares/black.png', 'images/squares/blue.png', 'images/squares/brown.png', 'images/squares/cyan.png', 'images/squares/green.png', 'images/squares/magenta.png', 'images/squares/orange.png', 'images/squares/red.png', 'images/squares/yellow.png']
-        /* setting the locations to randomize from */
-        var locations = ["<img class='a' src=", "<img class='b' src=", "<img class='c' src=", "<img class='d' src=", "<img class='e' src=", "<img class='f' src=", "<img class='g' src=", "<img class='h' src=", "<img class='i' src=", "<img class='j' src=", "<img class='k' src=", "<img class='l' src=",]
-        var locations_setsize1 = ["<img class='upper1' src=", "<img class='upper2' src=", "<img class='upper3' src=", "<img class='lower1' src=", "<img class='lower2' src=", "<img class='lower3' src="]
-       
+ 
+    
         var preload = {
             type: jsPsychPreload,
-            images: [practice_deck_images, test_deck_images, reward_images, instructions_images,change_detection_images]
+            images: [practice_deck_images, test_deck_images, reward_images, instructions_images]
         };
         /*---------------------------------------------------- 
         Functions for card game
         ------------------------------------------------------*/
 
-        function draw_show_cards(current_trial,deck) {
-            if (current_trial%2==0){
-            drawn_cards=jsPsych.randomization.shuffle([deck[0],deck[1]]) 
-            }
-            else{
-            drawn_cards=jsPsych.randomization.shuffle([deck[2],deck[3]])
-            }
+        function draw_show_cards(current_trial_num,deck) {
+            drawn_cards = jsPsych.randomization.sampleWithoutReplacement(deck, 4)
             left_card = drawn_cards[0];
             right_card = drawn_cards[1];
             left_with_tag = "<img class='card_left' src='" + left_card + "'>"
@@ -167,7 +155,7 @@
             else {
                 selected = -1
                 reward = 0
-                return '<div style="font-size:40px;">wrong key!</div><br><br><div style="font-size:20px;">Please use the ‘K’ and ‘S’ keys to select the left or right card respectively. </div>'
+                return '<div style="font-size:40px;">wrong key!</div><br><br><div style="font-size:20px;">Please use the "K" and "S" keys to select the left or right card respectively. </div>'
             }
             return card_to_show + fixation
         }
@@ -184,10 +172,10 @@
                 return '<div style="font-size:40px;">Please respond faster!</div>'
             }
             else {
-                return '<div style="font-size:40px;">wrong key!</div><br><br><div style="font-size:20px;">Please use the ‘K’ and ‘S’ keys to select the left or right card respectively. </div>'
+                return '<div style="font-size:40px;">wrong key!</div><br><br><div style="font-size:20px;">Please use the "K" and "S" keys to select the left or right card respectively. </div>'
             }
             card_selected = jsPsych.data.getLastTrialData().values()[0].card_selected 
-            prob_reward = FB_matrix[card_selected]; 
+            prob_reward = FB_matrix[card_selected][current_trial_num]; 
             prob_unreward = 1 - prob_reward; 
             reward = jsPsych.randomization.sampleWithReplacement([0, 1], 1, [prob_unreward, prob_reward])[0]; 
             reward_to_show = "<img class=reward src='" + reward_images[reward] + "'>" 
@@ -200,46 +188,7 @@
             images = test_deck_images.slice(block * 4, block * 4 + 4)
             return images
         }
-        /*---------------------------------------------------- 
-        Functions for squares game
-        ------------------------------------------------------*/
-        //This function decides on a random location for the test square
-        function getRandomInt(max) {
-            return Math.floor(Math.random() * Math.floor(max));
-        }
-        //This function picks random squares to show
-        function get_squares(images, number_of_images) {
-            return jsPsych.randomization.sampleWithoutReplacement(change_detection_images, number_of_images)
-        }
-        /*This function picks the locations in which the squares will be shown 
-         It also takes care of equally randomizing the different quadrants   */
-        function get_locations(locations_arr, number_of_images, locations_arr1) {
-            random_locations = [];
-            if (number_of_images == 1) {
-                return jsPsych.randomization.sampleWithoutReplacement(locations_arr1, 1)
-            }
-            for (var i = 0; i < 4; i++) {
-                random_2_locations = jsPsych.randomization.sampleWithoutReplacement(locations_arr.slice(i * 3, i * 3 + 3), 2)
-                random_locations.push(random_2_locations[0])
-                if (number_of_images > 4) {
-                    random_locations.push(random_2_locations[1])
-                }
-            }
-            return random_locations
-        }
-        /*This function combines the squares and the locations that were randomly chosen */
-        function generate_random_squares(condition) {
-            number_of_images = parseInt(condition[0])
-            change_detection_images = jsPsych.randomization.shuffle(change_detection_images)
-            current_locations = get_locations(locations, number_of_images, locations_setsize1)
-            squares = '';
-            for (index = 0; index < number_of_images; index++) {
-                squares += current_locations[index] + change_detection_images[index] + ">"
-            }
-            return squares + fixation;
-        }
-        var condition_squares_exp = jsPsych.randomization.sampleWithoutReplacement(['4same', '4diff', '8same', '8diff'], 1)[0]
-       
+
         /*---------------------------------------------------- 
         Card game starts
         ------------------------------------------------------*/
@@ -249,40 +198,69 @@
             message: '<p>This experiment will be in fullscreen mode. <br> <b>Please make sure your browser is on 100% zoom, and your keyboard is on the English language.</b></p>',
             fullscreen_mode: true
         }
-      
+        var consent_payment = {
+        type: jsPsychHtmlButtonResponse,
+        choices: ["I have read, understand, and agree to the above", "<a href='https://www.prolific.co/'>Press here to quit the experiment</a>"],
+        stimulus:"<h2><b>Consent to participate in a research:</b></h2>"
+        +"<p><strong>You will be paid only after participating in the next and final session.</p>"
+        }
+        
+        
+        var consent = {
+        type: jsPsychHtmlButtonResponse,
+        choices: ["I have read, understand, and agree to the above", "<a href='https://www.prolific.co/'>Press here to quit the experiment</a>"],
+        stimulus:
+"<p><b>Consent to participate in a research:</b></p>"+ 
+"<p><u>A study of reward learning and information processing</u></p>"+
+"<p>A research team led by Dr. Nitzan Shahar at Tel-Aviv University and Dr. Liron Rozenkrantz at Bar-Ilan University is running this study, via Prolific, a web-based research study platform.</p>"+ 
+"<p><strong>Procedures</strong></p>"+
+"<p>In this online study, you will be asked to complete an online task and self-report questionnaires about your daily behaviors, experiences, and habits. The experiment will include two sessions. In the first session today, you will be asked to choose shapes to gain monetary rewards. The task includes four shapes, and in each trial, the computer randomly selects and offers two for you to choose from. Each shape leads to a reward according to an expected value that drifts across trials. You will need to do your best to earn as much money as possible. A bonus payment will be added based on your performance. In the second session, you will be asked to complete a memory task as well as questionnaires and surveys. Each session should take about 30 minutes.</p>"+ 
+"<p><strong>Participation</strong></p>"+
+"<p>You are free to choose whether to be in this study. If you choose to participate, it's okay to stop and discontinue the study at any point during the session, although we ask that you complete each section of the study (the task and the questionnaires) in one sitting.</p>"+ 
+"<p><strong>Will there be any risk or discomfort to me?</strong></p>"+
+"<p>There is no risk involved in this study. You will complete several questionnaires and surveys in an online manner. You will have time for breaks whenever you feel tired. If you feel any discomfort during the study, you can stop the activity at any time.</p>"+ 
+"<p><strong>Will I benefit by being in this research?</strong></p>"+
+"<p>This study's goal is to learn about reward learning and information processing in people with and without a diagnosis of autism. You will not benefit directly from this research; however, we hope that the results will ultimately improve our scientific understanding of information processing.</p>"+ 
+"<p><strong>Payment</strong></p>"+
+"<p>You will receive compensation for your participation. You may also receive an additional bonus based on your performance in the shapes game. There are no additional benefits anticipated for you for participation in this research study.</p>"+ 
+"<p><strong>Data collection</strong></p>"+
+"<p>During the session, your responses will be recorded. Your responses are sent securely to our lab. Data is stored securely by researchers at Tel Aviv University. However, there is always a small risk that data transmitted over the internet may be intercepted or that the security of stored data may be compromised.</p>"+ 
+"<p><strong>Use of data</strong></p>"+
+"<p>The research group led by Dr. Nitzan Shahar at Tel-Aviv University and Dr. Liron Rozenkrantz at Bar-Ilan University will have access to data collected during this session.</p>"+ 
+"<p><strong>Publication of results</strong></p>"+
+"<p>The results of the research may be presented at scientific meetings or published in scientific journals. We never publish any identifying information including birthdates or names, and we never publish your demographic data.</p>"+ 
+"<p><strong>Researcher contact information</strong></p>"+
+"<p>This study is run by Dr. Nitzan Shahar at Tel-Aviv University and Dr. Liron Rozenkrantz at Bar-Ilan University. If you have any questions or concerns about this study, or in the very unlikely event of a research-related injury, please contact Dr. Shahar at nitzansh@tauex.tau.ac.il or Dr. Rozenkrantz at liron.rozenkrantz@biu.ac.il.</p>"+
+"<p> <b><u>Click the button below to continue</b></u></p>"      }
+
         /*---------------------------------------------------- 
         Start instructions
         ------------------------------------------------------*/
         var instructions_cards = {
             on_start: function () {
-                if (document.querySelector('#cursor-toggle') != null) {
-                    document.querySelector('#cursor-toggle').remove()
-                }
+                document.body.style.cursor = 'auto';
             },
             type: jsPsychInstructions,
-            pages: ["<p><b><u>Welcome to the game</u></b></p>"
-               + "<p style='text-align:left'>Your winnings in this game will earn you additional payment bonus for participating in the study."
-               + " If you do not earn any extra money in the card game, you will still receive <b>&pound5 per hour</b> for completing this session of the study."
-               + " However, you can gain up to an <b>extra &pound1 based on winnings in the game.</b></p>"
-               + "<u>Feel free to go back and forth between the screens using the keyboard left and right arrows or the buttons below.</u><br><br>"
+            pages: ["<p><b><u>Welcome to the shapes game</u></b></p>"
+               + "<p style='text-align:left'>Participation in this game may entitle you to an additional payment bonus. You will be compensated at a rate of &pound;7 per hour for completing this study. Moreover, you have the opportunity to earn <b>an extra &pound;1 based on your game winnings.</b></p>"
+               + "<u>Feel free to navigate between screens using the keyboard's left and right arrows or the buttons provided below.</u><br><br>"
                ,
-            "<p style='text-align:left'> We will now provide instructions regarding the game. <b>Please read them carefully.</b> <br></p>"
+            "<p style='text-align:left'> We will now present the game instructions. <b>Please read them attentively.</b> <br></p>"
            ,
-            "<p style='text-align:left'>Once you finished reading the instructions, <b>we will ask you to take a quick quiz</b> to make sure you understood everything correctly.</p>",
+            "<p style='text-align:left'>After reviewing the instructions, <b>you will be asked to complete a brief quiz</b> to verify your understanding.</p>",
 
-            "<p style='text-align:left'>On each step of the game, you will be presented with a choice between two shapes."
-                +" To select the <b>left shape</b>, press 's' on your keyboard, and to select the <b>right card</b>, press 'k'.</p>"
-            + "<img class='example' src= " + instructions_images[0] + ">",
+            "<p style='text-align:left'>During each game step, you will choose between two shapes. Press 's' for the <b>left shape</b> and 'k' for the <b>right shape</p>"
+            + "<img class='reward_example' src= " + instructions_images[0] + ">",
 
-            "<p style='text-align:left'>Once you made your selection, you will  <b>see the <u>selected shape</u> alongside a coin outcome</b> displayed in the center of the screen. <br>The outcome can either be <b>winning a golden coin</b>, as illustrated below, or...</p>"
+            "<p style='text-align:left'>After making your selection, <b>the <u>chosen shape</u> and a coin outcome will be displayed</b> in the screen center. The result can be a <b>golden coin win</b>, as shown below, or...</p>"
             +"<br> <img class='reward_example' src= " + instructions_images[1] + ">",
-            "<p style='text-align:left'>it could be <b>not winning a coin, as presented here</b></p>"
+            "<p style='text-align:left'>Alternatively, it might result in <b>not winning a coin, as shown here</b></p>"
             + "<br> <img class='reward_example' src= " + instructions_images[2] + ">",
-            "<b>Some shapes give golden coins more often</b> than others. <br> Your task is to <b>learn this and choose accordingly.</b> <br><br><u>These golden coins translate to your money bonus</u>. ",
-            "Please note that <b>each shape has its own winning chances</b>.<br><br> Learning about one shape tells you nothing about the other shapes. Finding out that one shape gives you coins often, doesn't mean the other one would not.</p>",
-            "In this task you will play <b>10 rounds</b> with <b>20 shape choices</b> in each round. On each round you will see a <b>total of 4 different shapes.</b>"
-            ,"<p style='text-align:left'><u>Three important things to remember:</u><br>"
-                + "1. <b>How good a shape is will not change during the round</b> - it's just that bad shapes can sometimes bring you a golden coin and vice versa."
+            "<b>Certain shapes give golden coins more often</b>. <br> Your objective is to <b>learn this and choose wisely.</b> <br><br><u>These golden coins contribute to your money bonus</u>. ",
+            "Please be aware that <b>each shape has its unique winning chances</b>.<br><br> Learning about one shape tells you nothing about the other shapes. Finding out that one shape gives you coins often, doesn't mean the other one would not.</p>",
+            "In this task you will play <b>4 rounds</b> each consisting of <b>50 shape choices</b>. Every round will include a <b>total of <u>4</u> different shapes.</b>"
+            ,"<p style='text-align:left'><u>Three critical points to remember:</u><br>"
+                + "1. <b>How good a shape is may slowly change throughout the round</b> - just like the value of market products."
                 + "<br><br>2.<b> Only the shapes matter when you choose - </b> the location of the shape and the response key you used to select it do not influence the chances of winning a coin.<br><br>"
                 + " 3. <b>Each shape has its own winning chances - </b> you can't learn about one shape from the rewards you got for the other."
                 + " <br><br><u>Please do your best to earn as many coins as you can, while responding quickly as possible.</u><br><br></p>"],
@@ -291,17 +269,16 @@
         
         var start_instructions_test = {
             on_start: function () {
-                if (document.querySelector('#cursor-toggle') != null)
-                    document.querySelector('#cursor-toggle').remove()
+                document.body.style.cursor = 'auto';
             },
             type: jsPsychHtmlKeyboardResponse,
-            stimulus: "<p> <br><br> You will now move on to a quick quiz to make sure you understood the instructions. <b>If you will have a mistake you will need to go again through the instructions.</b> <br>Make sure you scroll down until you answer all questions. <br><br> <b> Press any key to continue</b></p>"
+            stimulus: "<p><br><br>You will now proceed to a brief quiz to ensure you've understood the instructions. <b>If you make a mistake, you will be required to review the instructions once more.</b> <br>Ensure you scroll down to answer all the questions.<br><br><b>Press any key to continue.</b></p>"
         }
         var Q1_2_options = ["2", "4", "6"];
         var Q3_options = ["Click on it", "Press the LEFT or RIGHT arrow keys", "Press the `S` or `K` key with your LEFT or RIGHT hand."];
         var Q4_5_6_7_options = ["True", "False"];
         var Q8_options = ["The goal is to win as many coins as possible", "The goal is to answer the questions as quickly as possible"]
-        var Q9_options = ["True","False - what I learn about one shape does not tell me anything about the others. I can only learn whether a shape is good or not by choosing it."];
+        var Q9_options = ["True","False - what I learn about one shape tells me nothing about the others. I can only learn whether a shape is good or not by choosing it."];
         var Q10_options = ["True - the response keys are related to the winning chances", "False - you won't win more or less using RIGHT or LEFT response keys. Only the shapes are related to your chances of winning."];
 
         var instructions_test = {
@@ -312,10 +289,10 @@
                 { prompt: "How do you choose a shape?", name: 'choose_card', correct: 'Press the `S` or `K` key with your LEFT or RIGHT hand.', options: Q3_options, required: true },
                 { prompt: "Money bonus depends on the number of golden coins I obtain", name: 'block_stakes', correct: "True", options: Q4_5_6_7_options, required: true },
                 { prompt: "Some shapes are better than others.", name: 'better_cards', correct: 'True', options: Q4_5_6_7_options, required: true },
-                { prompt: "How `good` or `bad` a shape is will change along the round.", name: 'value_change', correct: 'False', options: Q4_5_6_7_options, required: true },
+                { prompt: "How `good` or `bad` a shape is will change along the round.", name: 'value_change', correct: 'True', options: Q4_5_6_7_options, required: true },
                 { prompt: "What is the goal of the game?", name: 'game_goal', correct: "The goal is to win as many coins as possible", options: Q8_options, required: true },
                 { prompt: "If one shape often leads to winning coins, then the other ones are less likely to lead to winning coins.", name: 'value_independence', 
-                correct: "False - what I learn about one shape does not tell me anything about the others. I can only learn whether a shape is good or not by choosing it.", options: Q9_options, required: true },
+                correct: "False - what I learn about one shape tells me nothing about the others. I can only learn whether a shape is good or not by choosing it.", options: Q9_options, required: true },
                 { prompt: "If you use the RIGHT and not the LEFT response keys, you might win more.", name: 'location_value', 
                 correct: "False - you won't win more or less using RIGHT or LEFT response keys. Only the shapes are related to your chances of winning.", options: Q10_options, required: true },
             ],
@@ -354,87 +331,7 @@
         /*---------------------------------------------------- 
         Start instructions variabels
         ------------------------------------------------------*/
-        var instructions_squares = {
-            type: "instructions",
-            pages: ["The experiment will have two parts, we will now learn the first one, called the <b>'squares game'</b>.",
-                "We will now provide instructions regarding the squares game. <b>Please read them carefully.</b>",
-                "Feel free to <b>go back and forth between the screens using the arrows</b> (Left=previous, Right=next) or the buttons below."
-                , "At the end of the instructions, <b>we will ask you to complete a short quiz about them</b>, to make sure everything is well understood."
-                , "In this part of the experiment, you will see a plus in the middle of the screen." +
-                "<p> We would like you to <b>focus on the plus whenever it appears</b>.</p> " + "<img src='images/fixation.png'>",
-                "<p> Then, 4 or 8 colored 'memory' squares will appear on the screen. <b>You need to remember the colors and locations of all of the squares</b>.</p>" +
-                "<img src='images/squares/example1.png'>",
-                "<p> Right afterward, the 'memory' squares will disappear and instead, one 'test' square will show up in a place where one of the squares was previously displayed.</p>" +
-                "<p> Your goal is to <b>identify whether the new 'test' square is in the same or different color as the one previously displayed in this location</b>.</p>" +
-                "<p> You need to press <b>'" + mapping[0] + "'</b> if you think the color is the <b>same</b> as the color of the square previously appearing in this location.</p>" +
-                "<img src='images/squares/example2.png'>",
-                "<p> You need to press <b>'" + mapping[1] + "'</b> if you think the color is <b>different</b> than the color of the square previously appearing in this location.</p>" +
-                "<img src='images/squares/example3.png'>", "<p> We will now ask you to complete a short quiz to make sure that you understood the instructions."],
-            show_clickable_nav: true,
-        };
-
-        var Q1_square_options = ["2 or 4", "4 or 6", "4 or 8"];
-        var Q2_square_options = ["True", "False"];
-        var Q3_square_options = ["Click on it", "Press the LEFT or RIGHT arrow keys", "Press the ‘" + mapping[0] + "’ or ‘" + mapping[1] + "’ key."];
-        var Q4_square_options = ["The plus appearing in the middle of the screen", "The colors and locations of the 'memory' squares", "The color and location of the single 'test' square"];
-        var Q5_square_options = ["To tell if the 'test' square is in the same color as the square previously appearing in this location", "To tell if a square previously appeared in the location of the shown square"];
-
-
-        var instructions_test_squares = {
-            type: 'survey-multi-choice',
-            questions: [
-                { prompt: "How many squares will be initially shown?", name: 'set_size', correct: '4 or 8', options: Q1_square_options, required: true },
-                { prompt: "The single square will appear after the squares will disappear ", name: 'steps', correct: 'True', options: Q2_square_options, required: true },
-                { prompt: "How do you choose if a square is same or different?", name: 'choose_square', correct: "Press the ‘" + mapping[0] + "’ or ‘" + mapping[1] + "’ key.", options: Q3_square_options, required: true },
-                { prompt: "What should you try to remember?", name: 'remember', correct: "The colors and locations of the 'memory' squares", options: Q4_square_options, required: true },
-                { prompt: "What is your task?", name: 'task', correct: "To tell if the 'test' square is in the same color as the square previously appearing in this location", options: Q5_square_options, required: true },
-            ],
-            data: { trial_name: 'test_squares' }
-        };
-
-        var if_trial_squares = {
-            type: 'html-button-response',
-            stimulus: "<p>Sorry. You made a mistake.<br>"
-                + "Let’s go back to the instructions. "
-                + "Please read them carefully before submitting your answers. <br>"
-                + "Thank you!",
-            choices: ['Back to instructions']
-        }
-        /* the to_repeat variable defined whether the quiz is to be repeate*/
-        var to_repeat_squares;
-        var check_answers = {
-            timeline: [if_trial_squares],
-            conditional_function: function () {
-                // get the data from the previous trial,
-                // and check which key was pressed
-                to_repeat_squares = false;
-                var responses_to_test_square = JSON.parse(jsPsych.data.get().filter({ trial_type: 'survey-multi-choice' }).last(1).select('responses').values[0])
-                for (i = 0; i < instructions_test_squares.questions.length; i++) {
-                    current_name = instructions_test_squares.questions[i].name;
-                    current_correct = instructions_test_squares.questions[i].correct
-                    if (current_correct != responses_to_test_square[current_name]) {
-                        to_repeat_squares = true;
-                        return to_repeat_squares
-                    }
-                    else {
-                        to_repeat_squares = false;
-                    }
-                }
-                return to_repeat_squares
-            }
-        }
-
-        var instructions_squares_loop = {
-            timeline: [instructions_squares, instructions_test_squares, check_answers],
-            loop_function: function () {
-                if (to_repeat_squares == true) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        }
-
+        
         /*This function downloads the data */
         function download_csv(csv) {
             var hiddenElement = document.createElement('a');
@@ -445,9 +342,6 @@
             hiddenElement.click();
         }
         
-        /*---------------------------------------------------- 
-        Start practice
-        ------------------------------------------------------*/
         var timeline = [];
         /*init connection with pavlovia.org
         var pavlovia_init = {
@@ -456,12 +350,17 @@
 
         };
         timeline.push(pavlovia_init);*/
+        timeline.push(id_num)
+        timeline.push(consent)
         timeline.push(enter_fullscreen)
-        var start_practice_only_cards = {
+        /*---------------------------------------------------- 
+        Cards part
+        ------------------------------------------------------*/
+        var start_practice_cards = {
             type: jsPsychHtmlKeyboardResponse,
             stimulus: '<div>We will now do a few practice trials. <br> Please be ready with your fingers on <b>"s"</b> and <b>"k".</b> <br><br> <b> Press any key to begin</b></div>',
             post_trial_gap: 1000,
-            on_finish: function () { document.querySelector('head').insertAdjacentHTML('beforeend', '<style id="cursor-toggle"> html { cursor: none; } </style>') },
+            on_finish: function () { document.body.style.cursor = 'none' },
         }
 
         var fixation_cards = { 
@@ -512,14 +411,9 @@
                 current_cards_practice_trial+=1
             }
         }
-
-        /*---------------------------------------------------- 
-        Start exp part of card game
-        ------------------------------------------------------*/
-
         var start_exp_cards = {
             type: jsPsychHtmlKeyboardResponse,
-            stimulus: '<div> Good job! Practice completed. <br> <br> We will now move on to the real game. Do your best to figure out which cards are better. Good luck!<br><br> <b>Press any key to continue.</b></div>',
+            stimulus: '<div> Good job! Practice completed. <br> <br> We will now move on to the real game. Do your best to win as many coins as you can. Good luck!<br><br> <b>Press any key to continue.</b></div>',
             post_trial_gap: 1000,
         }
 
@@ -528,7 +422,7 @@
             stimulus: function () {
                 return '<p><b><u>Test block ' + (block + 1) + ' out of ' + (blocks) + '</u></b></p>' + '<p style="text-align: left"> You will now start a test block. Below are the four shapes that can appear in this round.</p>'
                     + '<p style="text-align: left">Use the LEFT or RIGHT response keys ("s" or "k", in correspondence) to make your selection. <br> Please do your best to win as many coins as possible!<br> </p>'
-                    + '<p style="text-align: left"><b>Remember that:</b> <br> 1) How ‘good’ each shape is will not change along the round <br> 2) Only the shapes (not the response key that was used to select them) are important when you choose <br> 3) The chance that each shape will give you coins has nothing to do with the other shapes </p>'
+                    + '<p style="text-align: left"><b>Remember that:</b> <br> 1) How "good" each shape is may slowly change along the round <br> 2) Only the shapes (not the response key that was used to select them) are important when you choose <br> 3) The chance that each shape will give you coins has nothing to do with the other shapes </p>'
                     + '<p><b>Press SPACE to start</b></p>'
                     + '<img class="start" src="' + images_for_block_start()[0] + '">  ' + '<img class="start" src="' + images_for_block_start()[1] + '">    ' + '<img class="start" src="' + images_for_block_start()[2]
                     + '">    ' + '<img class="start" src="' + images_for_block_start()[3] + '">  '
@@ -536,7 +430,7 @@
             choices: [" "]
             , post_trial_gap: 1000,
             on_finish: function () { 
-                document.querySelector('head').insertAdjacentHTML('beforeend', '<style id="cursor-toggle"> html { cursor: none; } </style>') },
+                document.body.style.cursor = 'none' },
         }
 
         var exp_cards = {
@@ -576,10 +470,10 @@
             trial_duration: 750,
             data: {
                 phase: 'exp', trial_name: 'reward', trial_num: function () { return current_cards_exp_trial }, block: function () { return block },
-                prob1 : function(){return FB_matrix[0]} ,
-                prob2 : function(){return FB_matrix[1]},
-                prob3 : function(){return FB_matrix[2]},
-                prob4 : function(){return FB_matrix[3]}},
+                prob1 : function(){return FB_matrix[0][current_cards_exp_trial]} ,
+                prob2 : function(){return FB_matrix[1][current_cards_exp_trial]},
+                prob3 : function(){return FB_matrix[2][current_cards_exp_trial]},
+                prob4 : function(){return FB_matrix[3][current_cards_exp_trial]}},
                 
             on_finish: function (data) {
                 current_cards_exp_trial += 1;
@@ -603,10 +497,10 @@
                 finish_block_string = '<p><b>Good job!</b></p>' + '<p style="text-align: left"><br> Test block<b> ' + (block + 1) + ' out of ' + (blocks) + '</b> is over.'
                 finish_block_string += '<br>In this round, you earned <b> ' + rewards_for_block + ' coins</b>.</p>'
                 if ((block+1) !=blocks ) {
-                    finish_block_string += '<p style="text-align: left"> You can stretch a little and take a short break while sitting in front of the screen, if needed.</p><p> <br><br><br><b>Press SPACE to continue</b>  </p>'
+                    finish_block_string += '<p style="text-align: left"> You can stretch a little and take a short break while sitting in front of the screen, if needed (do not leave the experiment window).</p><p> <br><br><br><b>Press SPACE to continue</b>  </p>'
                 }
                 else {
-                    finish_block_string += ' We will now move on.</p><p> <br><br><br><b>Press SPACE to continue</b>  </p>'
+                    finish_block_string += ' This part of the experiment is over.</p><p><b>Press SPACE to continue</b>  </p>'
                 }
                 return finish_block_string
             },
@@ -619,20 +513,22 @@
             }
         }
 
-        var finish_learning = {
+        /*---------------------------------------------------- 
+        FINISH
+        ------------------------------------------------------*/
+        var finish_tasks = {
             on_start: function () {
-                while (document.querySelector('#cursor-toggle') != null)
-                    document.querySelector('#cursor-toggle').remove()
+                document.body.style.cursor = 'auto';
             },
             type: jsPsychHtmlButtonResponse,
             stimulus: function () {
-                return "<b>Congratulations!</b> <br><br> You successfully finished the task. <br>"
+                return "<b>Congratulations!</b> <br><br> You successfully finished the first session. <br>"
             },
-            choices:["Click here to complete the experiment"]
-            , button_html: ['<a href=https://tau-psychology.sona-systems.com/ target="_blank"> %choice%</a>']
+            choices:["Click here to complete the session"]
+            , button_html: ['<a href=https://www.prolific.co/ target="_blank"> %choice%</a>']
         }
         /*---------------------------------------------------- 
-        Define timeline for card part
+        Define timelines
         ------------------------------------------------------*/
         var demo_procedure_only_cards = {
             timeline: [fixation_cards, practice_cards, practice_choice, practice_reward],
@@ -640,7 +536,7 @@
         }
 
         var instructions_loop = {
-            timeline: [instructions_cards, start_practice_only_cards, demo_procedure_only_cards, start_instructions_test, instructions_test, check_answers],
+            timeline: [instructions_cards, start_practice_cards, demo_procedure_only_cards, start_instructions_test, instructions_test, check_answers],
             loop_function: function () {
                 if (to_repeat == true) {
                     return true;
@@ -650,27 +546,31 @@
             }
         } //instructions+ 1000 ms + 8.65 + test= 5 min + 9.65 sec + 3 min = 480 + 9.65 sec = 489.65 sec
 
-        var test_procedure_shapes = {
+        var test_procedure_cards = {
             timeline: [fixation_cards, exp_cards, exp_choice, exp_reward],
-            repetitions: 10 // 900+ 6000+ 1000+ 750= 8650 ms= 8.65 sec per trial - 40 trials per block= 346 sec
+            repetitions: 50 // 900+ 6000+ 1000+ 750= 8650 ms= 8.65 sec per trial - 50 trials per block
         }
         
         var test_blocks = {
-            timeline: [start_block, test_procedure_shapes, finish_block],
-            repetitions: 5
-        }; //3*(1+ 346+ 1)= 1044 sec
+            timeline: [start_block, test_procedure_cards, finish_block],
+            repetitions: 4
+        }; //4*50*(1+ 346+ 1)= 28.5 minutes
 
         var full_procedure_cards = {
-            timeline: [preload, instructions_loop, start_exp_cards, test_blocks,finish_learning]
+            timeline: [preload, instructions_loop, start_exp_cards, test_blocks]
         } //489.65+ 1+ 1044= 1534.65 sec = 25.5775 min
-        timeline.push(test_blocks)
+        timeline.push(full_procedure_cards)
 
 
+        timeline.push(finish_tasks)
         /* finish connection with pavlovia.org 
         var pavlovia_finish = {
         type: jsPsychPavlovia,
         command: "finish",
-        participantId: subject_id
+        participantId: id_response,
+        completedCallback: function() {
+                window.location.replace("https://www.prolific.co/");
+            }
         };
         timeline.push(pavlovia_finish);*/
         jsPsych.run(timeline);
